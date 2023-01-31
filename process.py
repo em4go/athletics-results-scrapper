@@ -2,21 +2,6 @@ import pdfplumber
 import re
 import regex
 
-categories = {
-    'SUB16': 'Sub-16',
-    'SUB18': 'Sub-18',
-    'SUB20': 'Sub-20',
-    'SUB23': 'Sub-23',
-    'ABSOLUTO': 'Absoluto'
-}
-
-
-# def get_category(line, default):
-#     category = re.search(regex.category, line)
-#     if category is None:
-#         return default
-#     return categories.get(category, category)
-
 def get_athlete_category(year):
     correspondence = {
         '2001': 'Sub-23',
@@ -70,12 +55,6 @@ def scrap_line(line):
     return a
 
 
-# def get_text(path):
-#     with open(path, encoding='utf-8') as txt:
-#         text = txt.readlines()
-#     return text
-
-
 def get_event(line):
     line_list = line.split()
 
@@ -112,13 +91,10 @@ def get_results(pdf_path, indoor=False):
                     line = correct_duplicated_letters(line)
                 actual_race = line.strip()
 
-                # Categoría de la carrera
-                # category = get_category(line, default_category)
-
                 # Type of event
                 race_name = get_event(line)
 
-                # Carrera masculina o femenina
+                # Male or female event
                 if 'F' in line or 'J' in upper_line:
                     genre = 'female'
                 else:
@@ -146,37 +122,3 @@ def get_results(pdf_path, indoor=False):
                 results[race_index]['athletes'].append(athlete)
         return results
 
-
-if __name__ == '__main__':
-    path = 'gp-valencia.pdf'
-    out_txt = path + '.txt'
-    pdf_to_txt(path, out_txt)
-    # with open(out_txt, encoding='utf-8') as txt:
-    #     print(delete_duplicated(txt))
-
-"""
-(Posición) - Dorsal - [Nombre y Apellidos] - [Fecha de nacimiento] - Calle - [Marca] - Q?
-athlete = {
-    name: "Ernesto Martínez Gómez",
-    birthday: "27/05/2004",
-    mark: "50.61"
-    license: "AB13"
-    (e): False
-}
-
-race = {
-    name: '60m MASC.',
-    athletes: [
-        a1,
-        a2,
-        a3
-    ]
-}
-
-results = [
-    r1,
-    r2,
-    r3
-]
-
-"""
