@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}
+PDF scrapper
+{% endblock title %}
+
+{% block body %}
+<div class="w-screen flex justify-center">
+    <div class="grid grid-flow-col auto-cols-1fr w-3/4">
+        {% for pdf in pdf_list %}
+            {% include "pdf-card.html" %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock body %}
