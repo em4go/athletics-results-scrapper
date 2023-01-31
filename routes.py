@@ -38,8 +38,8 @@ athletes = [
     },
 ]
 
-@router.get('/', response_class=HTMLResponse)
-def index(request: Request):
+@router.get('/ranking', response_class=HTMLResponse)
+def ranking(request: Request):
     context = {'request': request, 'races': athletes}
     return templates.TemplateResponse('index.html', context)
 
@@ -49,12 +49,12 @@ def view_competitions(request: Request):
     context = {'request': request, 'pdf_list': pdf_list}
     return templates.TemplateResponse('pdf.html', context)
 
-@router.get('/add_competition', response_class=HTMLResponse)
+@router.get('/', response_class=HTMLResponse)
 def add_competition(request: Request):
     context = {'request': request}
     return templates.TemplateResponse('add.html', context)
 
-@router.post('/add_competition')
+@router.post('/')
 async def post_competition(file_name: UploadFile = File(), indoor: bool = Form(), localidad: str = Form()):
     with open(getcwd() + '\\pdf\\' + file_name.filename, 'wb') as myfile:
         content = await file_name.read()
