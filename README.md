@@ -15,6 +15,9 @@ To start the web server, the comand to input is `uvicorn main:app --reload`.
 It will start a development server, which will be enough to try the app.
 After that, open your web browser and navigate to `localhost:8000` or `http://127.0.0.1:8000`. The URL will be showed in the command line.
 
+It is important to run the project from the folder where the `main.py` file is located.
+The same applies for the example code folder.
+
 ## How it works
 
 The principal URL is `/` (index), which includes a form and processes the pdf sent by the user. It will show an error if you send a non pdf file. If the pdf is not in RFEA results format (see example in the `/pdf`) folder, it will probably return a 0 element list (`[]`) as a response, which indiceates that there was no information scrapped.
