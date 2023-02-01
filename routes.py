@@ -1,12 +1,24 @@
-from fastapi import APIRouter, UploadFile, File, Form, Request
+from fastapi import APIRouter, UploadFile, File, Form, Request, Depends, HTTPException
 from fastapi.responses import FileResponse, JSONResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from os import getcwd, remove
 from shutil import rmtree
 from process import get_results
+from sqlalchemy.orm import Session
+from database import engine, SessionLocal
+import models
+from athletes import Athlete
 
 router = APIRouter()
 templates = Jinja2Templates(directory='templates')
+
+models.Base.metadata.create_all(bind=engine)
+def get_db():
+    try:
+        db = SessionLocal()
+        yield db
+    finally:
+        db.close()
 
 athletes = [
     {
@@ -42,6 +54,53 @@ athletes = [
 def ranking(request: Request):
     context = {'request': request, 'races': athletes}
     return templates.TemplateResponse('index.html', context)
+
+@router.get('/athletes')
+def read_api(db: Session = Depends(get_db)):
+    return db.query(models.Athlete).all()
+
+@router.post('/athletes')
+def create_athlete(athlete: Athlete, db: Session = Depends(get_db)):
+    athlete_model = models.Athlete()
+    athlete_model.name = athlete.name
+    athlete_model.license = athlete.license
+    athlete_model.birthday = athlete.birthday
+    athlete_model.category = athlete.category
+
+    db.add(athlete_model)
+    db.commit()
+
+@router.put('/athletes/{athlete_id}')
+def read_api(athlete_id: int, athlete: Athlete, db: Session = Depends(get_db)):
+    athlete_model = db.query(models.Athlete).filter(models.Athlete.id == athlete_id).first()
+
+    if athlete_model is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f'ID {athlete_id} does not exist'
+        )
+
+    athlete_model.name = athlete.name
+    athlete_model.license = athlete.license
+    athlete_model.birthday = athlete.birthday
+    athlete_model.category = athlete.category
+
+    db.add(athlete_model)
+    db.commit()
+    return athlete
+
+@router.delete('/athletes/{athlete_id}')
+def read_api(athlete_id: int, db: Session = Depends(get_db)):
+    athlete_model = db.query(models.Athlete).filter(models.Athlete.id == athlete_id).first()
+
+    if athlete_model is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f'ID {athlete_id} does not exist'
+        )
+
+    db.query(models.Athlete).filter(models.Athlete.id == athlete_id).delete()
+    db.commit()
 
 @router.get('/view_competitions', response_class=HTMLResponse)
 def view_competitions(request: Request):
