@@ -5,8 +5,8 @@ from os import getcwd, remove
 from shutil import rmtree
 from process import get_results
 from sqlalchemy.orm import Session
-from database import engine, SessionLocal
-import models
+from db.db_setup import engine, SessionLocal
+from db.models import models
 from athletes import Athlete
 
 router = APIRouter()
@@ -61,7 +61,7 @@ def read_api(db: Session = Depends(get_db)):
 
 @router.post('/athletes')
 def create_athlete(athlete: Athlete, db: Session = Depends(get_db)):
-    athlete_model = models.Athlete()
+    athlete_model = athlete.Athlete()
     athlete_model.name = athlete.name
     athlete_model.license = athlete.license
     athlete_model.birthday = athlete.birthday
@@ -114,11 +114,12 @@ def add_competition(request: Request):
     return templates.TemplateResponse('add.html', context)
 
 @router.post('/')
-async def post_competition(file_name: UploadFile = File(), indoor: bool = Form(), localidad: str = Form()):
+async def post_competition(file_name: UploadFile = File(), indoor: bool = Form(), location: str = Form(), date: str = Form()):
+    print(indoor, location, date)
     with open(getcwd() + '/pdf/' + file_name.filename, 'wb') as myfile:
         content = await file_name.read()
         myfile.write(content)
-    results = get_results(getcwd() + '/pdf/' + file_name.filename, indoor)
+    results = get_results(getcwd() + '/pdf/' + file_name.filename, indoor, location, date.replace('-', '/'))
 
     return results
 
