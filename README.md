@@ -8,7 +8,7 @@ The project was made on a Windows computer, so I don't think it will work on Uni
 For linux or mac os, it would be necessary to adapt the paths in the computer to '/' instead of
 '\', so the system processes it correctly.
 
-Before starting the web app, it is necessary to init the virtual environment using `.\venv\Scripts\activate`
+Before starting the web app, it is necessary to init the virtual environment using `source venv/bin/activate`
 as the dependencies are installed on it.
 
 To start the web server, the comand to input is `uvicorn main:app --reload`.
